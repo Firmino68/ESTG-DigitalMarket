@@ -1,0 +1,13 @@
+# Uploads de utilizadores (não versionar ficheiros reais)
+uploads/products/*
+!uploads/products/.gitkeep
+
+# Ficheiros de sistema
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Configuração local (se vieres a separar credenciais sensíveis)
+config/database.local.php

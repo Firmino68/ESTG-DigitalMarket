@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DigitalMarket — ESTG-ESH</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #111118;
+    --bg3: #1a1a24;
+    --bg4: #22222f;
+    --surface: #1e1e2a;
+    --surface2: #252535;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --accent: #7c6cfc;
+    --accent2: #a594ff;
+    --accent3: #5a4df5;
+    --teal: #2dd4bf;
+    --amber: #f59e0b;
+    --coral: #f97316;
+    --rose: #fb7185;
+    --green: #4ade80;
+    --text: #f0effe;
+    --text2: #a9a6c0;
+    --text3: #6b6885;
+    --radius: 12px;
+    --radius-lg: 18px;
+    --radius-xl: 24px;
+  }
+  [data-theme="light"] {
+    --bg: #f4f3ff;
+    --bg2: #ede9fe;
+    --bg3: #fff;
+    --bg4: #f8f7ff;
+    --surface: #fff;
+    --surface2: #f4f3ff;
+    --border: rgba(0,0,0,0.08);
+    --border2: rgba(0,0,0,0.14);
+    --accent: #6d5cf7;
+    --accent2: #8b74ff;
+    --accent3: #5040e8;
+    --text: #1a1830;
+    --text2: #4a4668;
+    --text3: #9390b0;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  /* ── NAV ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,10,15,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 1.5rem;
+    display: flex; align-items: center; gap: 1rem;
+    height: 62px;
+  }
+  [data-theme="light"] nav { background: rgba(244,243,255,0.88); }
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.25rem; font-weight: 800;
+    background: linear-gradient(135deg, var(--accent2), var(--teal));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    letter-spacing: -0.02em; white-space: nowrap;
+    cursor: pointer;
+  }
+  .nav-search {
+    flex: 1; max-width: 380px;
+    display: flex; align-items: center;
+    background: var(--surface); border: 1px solid var(--border2);
+    border-radius: 999px; padding: 0 1rem; gap: 8px;
+  }
+  .nav-search input {
+    border: none; background: transparent; color: var(--text);
+    font-size: 14px; outline: none; width: 100%; padding: 8px 0;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .nav-search input::placeholder { color: var(--text3); }
+  .nav-search svg { color: var(--text3); flex-shrink: 0; }
+  .nav-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 16px; border-radius: 999px; font-size: 13px;
+    font-weight: 500; cursor: pointer; transition: all .15s; border: none;
+    font-family: 'DM Sans', sans-serif; white-space: nowrap;
+  }
+  .btn-ghost { background: transparent; color: var(--text2); border: 1px solid var(--border2); }
+  .btn-ghost:hover { background: var(--surface); color: var(--text); }
+  .btn-primary {
+    background: var(--accent); color: #fff;
+    box-shadow: 0 0 20px rgba(124,108,252,0.3);
+  }
+  .btn-primary:hover { background: var(--accent2); box-shadow: 0 0 28px rgba(124,108,252,0.45); }
+  .btn-sm { padding: 6px 12px; font-size: 12px; }
+  .cart-btn {
+    position: relative; background: var(--surface); border: 1px solid var(--border2);
+    border-radius: 999px; padding: 8px 14px; cursor: pointer; color: var(--text);
+    font-size: 13px; display: flex; align-items: center; gap: 6px; transition: all .15s;
+    font-family: 'DM Sans', sans-serif; font-weight: 500;
+  }
+  .cart-btn:hover { border-color: var(--accent); }
+  .cart-count {
+    position: absolute; top: -4px; right: -4px;
+    background: var(--accent); color: #fff; border-radius: 999px;
+    font-size: 10px; font-weight: 700; min-width: 18px; height: 18px;
+    display: flex; align-items: center; justify-content: center; padding: 0 4px;
+  }
+  .theme-btn {
+    background: var(--surface); border: 1px solid var(--border2);
+    border-radius: 999px; width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--text2); transition: all .15s;
+  }
+  .theme-btn:hover { color: var(--accent); border-color: var(--accent); }
+  /* ── VIEWS ── */
+  .view { display: none; }
+  .view.active { display: block; }
+  /* ── TABS ── */
+  .tabs {
+    display: flex; gap: 4px;
+    background: var(--surface); border-radius: 999px; padding: 4px;
+    border: 1px solid var(--border);
+  }
+  .tab {
+    padding: 6px 14px; border-radius: 999px; cursor: pointer;
+    font-size: 13px; font-weight: 500; transition: all .15s;
+    color: var(--text2); white-space: nowrap;
+  }
+  .tab.active { background: var(--accent); color: #fff; }
+  /* ── HERO ── */
+  .hero {
+    text-align: center; padding: 5rem 1.5rem 3rem;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; top: -100px; left: 50%; transform: translateX(-50%);
+    width: 600px; height: 400px;
+    background: radial-gradient(ellipse at center, rgba(124,108,252,0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero h1 {
+    font-family: 'Syne', sans-serif; font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800; letter-spacing: -0.03em; line-height: 1.1;
+    margin-bottom: 1rem;
+  }
+  .hero h1 span {
+    background: linear-gradient(135deg, var(--accent2), var(--teal));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .hero p { color: var(--text2); font-size: 1.1rem; max-width: 520px; margin: 0 auto 2rem; }
+  .hero-cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .hero-stats {
+    display: flex; gap: 2rem; justify-content: center; margin-top: 3rem;
+    flex-wrap: wrap;
+  }
+  .stat { text-align: center; }
+  .stat-num {
+    font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 700;
+    color: var(--accent2);
+  }
+  .stat-label { font-size: 12px; color: var(--text3); }
+  /* ── FILTERS ── */
+  .filters-bar {
+    padding: 1rem 1.5rem; display: flex; align-items: center; gap: 12px;
+    border-bottom: 1px solid var(--border); overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .filter-chip {
+    padding: 6px 14px; border-radius: 999px; border: 1px solid var(--border2);
+    font-size: 13px; cursor: pointer; transition: all .15s; white-space: nowrap;
+    color: var(--text2); background: transparent; font-family: 'DM Sans', sans-serif;
+  }
+  .filter-chip:hover, .filter-chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .sort-select {
+    background: var(--surface); border: 1px solid var(--border2);
+    color: var(--text); font-size: 13px; padding: 6px 12px;
+    border-radius: 999px; outline: none; cursor: pointer; margin-left: auto;
+    font-family: 'DM Sans', sans-serif;
+  }
+  /* ── GRID ── */
+  .grid-container { padding: 1.5rem; }
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+  }
+  /* ── CARD ── */
+  .product-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); overflow: hidden;
+    cursor: pointer; transition: all .2s;
+    display: flex; flex-direction: column;
+  }
+  .product-card:hover { border-color: var(--border2); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+  .card-thumb {
+    height: 160px; display: flex; align-items: center; justify-content: center;
+    font-size: 3rem; position: relative; overflow: hidden;
+  }
+  .card-badge {
+    position: absolute; top: 10px; left: 10px;
+    background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
+    color: #fff; font-size: 11px; font-weight: 600;
+    padding: 3px 8px; border-radius: 999px; letter-spacing: 0.02em;
+  }
+  .card-body { padding: 1rem; flex: 1; display: flex; flex-direction: column; gap: 8px; }
+  .card-seller { display: flex; align-items: center; gap: 6px; }
+  .seller-avatar {
+    width: 22px; height: 22px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700; color: #fff; flex-shrink: 0;
+  }
+  .card-title {
+    font-family: 'Syne', sans-serif; font-weight: 600; font-size: 0.95rem;
+    line-height: 1.3; color: var(--text);
+  }
+  .card-desc { font-size: 13px; color: var(--text2); line-height: 1.5; flex: 1; }
+  .card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 4px; }
+  .card-price { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.1rem; color: var(--accent2); }
+  .card-rating { font-size: 12px; color: var(--text3); display: flex; align-items: center; gap: 3px; }
+  .add-btn {
+    background: var(--accent); color: #fff; border: none; border-radius: 999px;
+    padding: 7px 14px; font-size: 12px; font-weight: 600; cursor: pointer;
+    transition: all .15s; font-family: 'DM Sans', sans-serif;
+  }
+  .add-btn:hover { background: var(--accent2); }
+  /* ── PRODUCT DETAIL ── */
+  .detail-container { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; }
+  .detail-back { color: var(--text2); font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 6px; margin-bottom: 1.5rem; }
+  .detail-back:hover { color: var(--accent2); }
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+  @media(max-width:650px){ .detail-grid { grid-template-columns: 1fr; } }
+  .detail-thumb {
+    border-radius: var(--radius-lg); height: 280px;
+    display: flex; align-items: center; justify-content: center; font-size: 5rem;
+    border: 1px solid var(--border);
+  }
+  .detail-title { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; margin-bottom: .5rem; }
+  .detail-meta { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 1rem; }
+  .tag {
+    font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: 999px;
+    background: var(--surface2); color: var(--text2); border: 1px solid var(--border);
+  }
+  .detail-price { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; color: var(--accent2); margin-bottom: 1rem; }
+  .detail-desc { color: var(--text2); line-height: 1.7; margin-bottom: 1.5rem; }
+  .detail-actions { display: flex; flex-direction: column; gap: 10px; }
+  .btn-buy {
+    background: var(--accent); color: #fff; border: none; padding: 14px;
+    border-radius: var(--radius); font-size: 1rem; font-weight: 600;
+    cursor: pointer; transition: all .15s; font-family: 'DM Sans', sans-serif;
+    box-shadow: 0 0 20px rgba(124,108,252,0.3);
+  }
+  .btn-buy:hover { background: var(--accent2); }
+  .btn-cart {
+    background: var(--surface); color: var(--text); border: 1px solid var(--border2);
+    padding: 12px; border-radius: var(--radius); font-size: 14px; font-weight: 500;
+    cursor: pointer; transition: all .15s; font-family: 'DM Sans', sans-serif;
+  }
+  .btn-cart:hover { border-color: var(--accent); }
+  .seller-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 1rem; margin-top: 1rem;
+  }
+  .seller-card h4 { font-size: 13px; color: var(--text3); margin-bottom: .5rem; }
+  /* ── CART ── */
+  .cart-container { max-width: 700px; margin: 0 auto; padding: 2rem 1.5rem; }
+  .cart-title { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; margin-bottom: 1.5rem; }
+  .cart-items { display: flex; flex-direction: column; gap: 12px; margin-bottom: 1.5rem; }
+  .cart-item {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 1rem;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .cart-item-icon { font-size: 2rem; flex-shrink: 0; }
+  .cart-item-info { flex: 1; min-width: 0; }
+  .cart-item-title { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cart-item-seller { font-size: 12px; color: var(--text3); }
+  .cart-item-price { font-family: 'Syne', sans-serif; font-weight: 700; color: var(--accent2); flex-shrink: 0; }
+  .remove-btn {
+    background: transparent; border: none; color: var(--text3); cursor: pointer;
+    font-size: 1rem; padding: 4px; border-radius: 6px; transition: all .1s;
+  }
+  .remove-btn:hover { color: var(--rose); background: rgba(251,113,133,0.1); }
+  .cart-summary {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 1.5rem;
+  }
+  .summary-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; }
+  .summary-total { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 700; border-top: 1px solid var(--border); margin-top: 8px; padding-top: 12px; }
+  .empty-state { text-align: center; padding: 4rem 1.5rem; }
+  .empty-state .big-icon { font-size: 4rem; margin-bottom: 1rem; }
+  .empty-state h3 { font-family: 'Syne', sans-serif; font-size: 1.4rem; margin-bottom: .5rem; }
+  .empty-state p { color: var(--text2); font-size: 14px; }
+  /* ── CHECKOUT ── */
+  .checkout-container { max-width: 600px; margin: 0 auto; padding: 2rem 1.5rem; }
+  .checkout-title { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; margin-bottom: 1.5rem; }
+  .form-group { margin-bottom: 1rem; }
+  .form-label { display: block; font-size: 13px; font-weight: 500; color: var(--text2); margin-bottom: 6px; }
+  .form-input {
+    width: 100%; background: var(--surface); border: 1px solid var(--border2);
+    border-radius: var(--radius); padding: 10px 14px; color: var(--text);
+    font-size: 14px; outline: none; transition: border-color .15s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .form-input:focus { border-color: var(--accent); }
+  .form-input::placeholder { color: var(--text3); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .payment-section {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 1.25rem; margin: 1.5rem 0;
+  }
+  .payment-section h3 { font-family: 'Syne', sans-serif; font-weight: 700; margin-bottom: 1rem; font-size: 1rem; }
+  .payment-fake {
+    background: var(--bg3); border: 1px dashed var(--border2);
+    border-radius: var(--radius); padding: 1rem; text-align: center;
+    color: var(--text3); font-size: 13px; margin-top: 10px;
+  }
+  .step-indicator { display: flex; gap: 8px; align-items: center; margin-bottom: 2rem; }
+  .step { display: flex; align-items: center; gap: 8px; }
+  .step-dot {
+    width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--border2);
+    display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600;
+    color: var(--text3);
+  }
+  .step-dot.done { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .step-dot.active { border-color: var(--accent); color: var(--accent); }
+  .step-line { flex: 1; height: 1px; background: var(--border2); }
+  /* ── SUCCESS ── */
+  .success-container { max-width: 500px; margin: 0 auto; padding: 4rem 1.5rem; text-align: center; }
+  .success-icon { font-size: 4rem; margin-bottom: 1.5rem; }
+  .success-title { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; margin-bottom: 1rem; }
+  .success-files {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 1rem; margin: 1.5rem 0; text-align: left;
+  }
+  .file-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px; border-radius: 8px; cursor: pointer; transition: background .1s;
+  }
+  .file-item:hover { background: var(--surface2); }
+  .file-item .btn-sm { margin-left: auto; }
+  /* ── DASHBOARD ── */
+  .dash-container { max-width: 1000px; margin: 0 auto; padding: 2rem 1.5rem; }
+  .dash-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; flex-wrap: wrap; gap: 12px; }
+  .dash-title { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; }
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+  .stat-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 1.25rem;
+  }
+  .stat-card-label { font-size: 12px; color: var(--text3); margin-bottom: 8px; }
+  .stat-card-value { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; }
+  .stat-card-sub { font-size: 12px; color: var(--green); margin-top: 4px; }
+  .gigs-list { display: flex; flex-direction: column; gap: 10px; }
+  .gig-item {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 1rem;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .gig-item-info { flex: 1; min-width: 0; }
+  .gig-item-title { font-weight: 500; font-size: 0.95rem; }
+  .gig-item-meta { font-size: 12px; color: var(--text3); }
+  .gig-actions { display: flex; gap: 8px; flex-shrink: 0; }
+  /* ── AUTH ── */
+  .auth-container {
+    max-width: 420px; margin: 3rem auto; padding: 2rem 1.5rem;
+  }
+  .auth-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-xl); padding: 2rem;
+  }
+  .auth-logo { text-align: center; margin-bottom: 1.5rem; }
+  .auth-title { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 800; margin-bottom: .25rem; }
+  .auth-sub { color: var(--text3); font-size: 13px; }
+  .auth-divider { display: flex; align-items: center; gap: 10px; margin: 1rem 0; color: var(--text3); font-size: 12px; }
+  .auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: var(--border2); }
+  .role-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 1rem; }
+  .role-btn {
+    border: 1.5px solid var(--border2); border-radius: var(--radius);
+    padding: 10px; text-align: center; cursor: pointer; transition: all .15s;
+  }
+  .role-btn.active { border-color: var(--accent); background: rgba(124,108,252,0.08); }
+  .role-btn .role-icon { font-size: 1.5rem; }
+  .role-btn .role-label { font-size: 12px; font-weight: 500; margin-top: 4px; }
+  /* ── CREATE GIG ── */
+  .create-container { max-width: 600px; margin: 0 auto; padding: 2rem 1.5rem; }
+  .create-title { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; margin-bottom: 1.5rem; }
+  .textarea-input {
+    width: 100%; background: var(--surface); border: 1px solid var(--border2);
+    border-radius: var(--radius); padding: 10px 14px; color: var(--text);
+    font-size: 14px; outline: none; transition: border-color .15s; resize: vertical;
+    font-family: 'DM Sans', sans-serif; min-height: 100px;
+  }
+  .textarea-input:focus { border-color: var(--accent); }
+  .upload-zone {
+    border: 2px dashed var(--border2); border-radius: var(--radius);
+    padding: 2rem; text-align: center; cursor: pointer; transition: all .15s;
+    color: var(--text2);
+  }
+  .upload-zone:hover { border-color: var(--accent); background: rgba(124,108,252,0.04); }
+  .upload-icon { font-size: 2rem; margin-bottom: 8px; }
+  /* ── TOAST ── */
+  #toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+  .toast {
+    background: var(--surface); border: 1px solid var(--border2);
+    border-radius: var(--radius); padding: 12px 16px;
+    display: flex; align-items: center; gap: 10px; font-size: 14px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    animation: toastIn .2s ease;
+  }
+  @keyframes toastIn { from { opacity:0; transform: translateX(20px); } to { opacity:1; transform: translateX(0); } }
+  /* ── MISC ── */
+  .section-title {
+    font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 700;
+    margin-bottom: 1rem; padding: 0 1.5rem;
+  }
+  .profile-container { max-width: 700px; margin: 0 auto; padding: 2rem 1.5rem; }
+  .profile-header {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 1.5rem;
+    display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1.5rem;
+  }
+  .avatar-lg {
+    width: 72px; height: 72px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.75rem; font-weight: 800; color: #fff; flex-shrink: 0;
+  }
+  .badge-role {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600;
+  }
+  .badge-seller { background: rgba(124,108,252,0.15); color: var(--accent2); }
+  .badge-buyer { background: rgba(45,212,191,0.15); color: var(--teal); }
+  .badge-admin { background: rgba(249,115,22,0.15); color: var(--coral); }
+  select.form-input { -webkit-appearance: none; appearance: none; }
+  .fw { width: 100%; }
+  hr.divider { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+  @media(max-width:600px){
+    .hero { padding: 3rem 1rem 2rem; }
+    .hero h1 { font-size: 1.8rem; }
+    nav { padding: 0 .75rem; gap: .5rem; }
+    .btn span { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo" onclick="showView('home')">⬡ DigitalMarket</div>
+  <div class="nav-search">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" id="search-input" placeholder="Pesquisar produtos e gigs…" oninput="filterProducts()">
+  </div>
+  <div class="nav-actions">
+    <button class="btn btn-ghost btn-sm" onclick="showView('catalog')"><span>Catálogo</span></button>
+    <button class="cart-btn" onclick="showView('cart')">
+      🛒 <span id="cart-label">Carrinho</span>
+      <span class="cart-count" id="cart-count" style="display:none">0</span>
+    </button>
+    <div class="theme-btn" onclick="toggleTheme()" title="Tema">☀️</div>
+    <div id="auth-nav">
+      <button class="btn btn-primary btn-sm" onclick="showView('login')"><span>Entrar</span> →</button>
+    </div>
+  </div>
+</nav>
+
+<!-- TOAST CONTAINER -->
+<div id="toast-container"></div>
+
+<!-- HOME VIEW -->
+<div class="view active" id="view-home">
+  <div class="hero">
+    <h1>O mercado digital<br>para <span>criadores portugueses</span></h1>
+    <p>Compra e vende ebooks, vídeos, templates e serviços freelance. 100% digital, sem logística.</p>
+    <div class="hero-cta">
+      <button class="btn btn-primary" onclick="showView('catalog')">Explorar Catálogo →</button>
+      <button class="btn btn-ghost" onclick="showView('login')">Vender Aqui</button>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num" id="stat-products">—</div><div class="stat-label">Produtos</div></div>
+      <div class="stat"><div class="stat-num" id="stat-sellers">—</div><div class="stat-label">Vendedores</div></div>
+      <div class="stat"><div class="stat-num">100%</div><div class="stat-label">Digital</div></div>
+      <div class="stat"><div class="stat-num">Free</div><div class="stat-label">Registo</div></div>
+    </div>
+  </div>
+
+  <p class="section-title">Em Destaque</p>
+  <div class="grid-container">
+    <div class="products-grid" id="featured-grid"></div>
+  </div>
+
+  <p class="section-title" style="margin-top:1rem">Categorias</p>
+  <div style="display:flex;gap:12px;padding:0 1.5rem 2rem;flex-wrap:wrap">
+    <div class="product-card" style="cursor:pointer;padding:1.25rem;flex-direction:row;align-items:center;gap:12px;min-width:180px" onclick="setCategory('Web Dev')">
+      <span style="font-size:2rem">💻</span>
+      <div><div style="font-weight:600;font-family:'Syne',sans-serif">Web Dev</div><div style="font-size:12px;color:var(--text2)">Sites & Apps</div></div>
+    </div>
+    <div class="product-card" style="cursor:pointer;padding:1.25rem;flex-direction:row;align-items:center;gap:12px;min-width:180px" onclick="setCategory('Ebooks')">
+      <span style="font-size:2rem">📚</span>
+      <div><div style="font-weight:600;font-family:'Syne',sans-serif">Ebooks</div><div style="font-size:12px;color:var(--text2)">PDF & Guias</div></div>
+    </div>
+    <div class="product-card" style="cursor:pointer;padding:1.25rem;flex-direction:row;align-items:center;gap:12px;min-width:180px" onclick="setCategory('Design')">
+      <span style="font-size:2rem">🎨</span>
+      <div><div style="font-weight:600;font-family:'Syne',sans-serif">Design</div><div style="font-size:12px;color:var(--text2)">UI/UX & Brand</div></div>
+    </div>
+    <div class="product-card" style="cursor:pointer;padding:1.25rem;flex-direction:row;align-items:center;gap:12px;min-width:180px" onclick="setCategory('Vídeo')">
+      <span style="font-size:2rem">🎬</span>
+      <div><div style="font-weight:600;font-family:'Syne',sans-serif">Vídeo</div><div style="font-size:12px;color:var(--text2)">Tutoriais & Cursos</div></div>
+    </div>
+    <div class="product-card" style="cursor:pointer;padding:1.25rem;flex-direction:row;align-items:center;gap:12px;min-width:180px" onclick="setCategory('Motivação')">
+      <span style="font-size:2rem">🚀</span>
+      <div><div style="font-weight:600;font-family:'Syne',sans-serif">Motivação</div><div style="font-size:12px;color:var(--text2)">Mindset & Growth</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- CATALOG VIEW -->
+<div class="view" id="view-catalog">
+  <div class="filters-bar">
+    <div class="tabs">
+      <div class="tab active" onclick="setTypeFilter('all',this)">Todos</div>
+      <div class="tab" onclick="setTypeFilter('digital',this)">Digital</div>
+      <div class="tab" onclick="setTypeFilter('service',this)">Serviços</div>
+    </div>
+    <button class="filter-chip active" onclick="setCatFilter('',this)">Todos</button>
+    <button class="filter-chip" onclick="setCatFilter('Web Dev',this)">💻 Web Dev</button>
+    <button class="filter-chip" onclick="setCatFilter('Ebooks',this)">📚 Ebooks</button>
+    <button class="filter-chip" onclick="setCatFilter('Design',this)">🎨 Design</button>
+    <button class="filter-chip" onclick="setCatFilter('Vídeo',this)">🎬 Vídeo</button>
+    <button class="filter-chip" onclick="setCatFilter('Motivação',this)">🚀 Motivação</button>
+    <select class="sort-select" id="sort-select" onchange="filterProducts()">
+      <option value="default">Ordenar</option>
+      <option value="price-asc">Preço: menor</option>
+      <option value="price-desc">Preço: maior</option>
+      <option value="rating">Melhor rating</option>
+    </select>
+  </div>
+  <div class="grid-container">
+    <div class="products-grid" id="catalog-grid"></div>
+  </div>
+</div>
+
+<!-- PRODUCT DETAIL VIEW -->
+<div class="view" id="view-product">
+  <div class="detail-container">
+    <div class="detail-back" onclick="goBack()">← Voltar</div>
+    <div class="detail-grid" id="product-detail-content"></div>
+  </div>
+</div>
+
+<!-- CART VIEW -->
+<div class="view" id="view-cart">
+  <div class="cart-container">
+    <h2 class="cart-title">🛒 Carrinho</h2>
+    <div id="cart-content"></div>
+  </div>
+</div>
+
+<!-- CHECKOUT VIEW -->
+<div class="view" id="view-checkout">
+  <div class="checkout-container">
+    <div class="step-indicator">
+      <div class="step"><div class="step-dot done">✓</div><span style="font-size:13px;color:var(--text2)">Carrinho</span></div>
+      <div class="step-line"></div>
+      <div class="step"><div class="step-dot active" id="step2">2</div><span style="font-size:13px;color:var(--accent2)">Dados</span></div>
+      <div class="step-line"></div>
+      <div class="step"><div class="step-dot" id="step3">3</div><span style="font-size:13px;color:var(--text3)">Pagamento</span></div>
+    </div>
+    <h2 class="checkout-title">Finalizar Compra</h2>
+    <div class="form-group">
+      <label class="form-label">Nome completo</label>
+      <input class="form-input" id="co-name" placeholder="João Silva" type="text">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Email (@piaget.pt)</label>
+      <input class="form-input" id="co-email" placeholder="joao@piaget.pt" type="email">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Mensagem ao vendedor (opcional)</label>
+      <textarea class="textarea-input" id="co-msg" placeholder="Olá! Tenho interesse..." style="min-height:70px"></textarea>
+    </div>
+    <div class="payment-section">
+      <h3>💳 Cartão de Crédito</h3>
+      <div class="form-group">
+        <label class="form-label">Número do cartão</label>
+        <input class="form-input" id="cc-num" placeholder="4242 4242 4242 4242" maxlength="19" oninput="fmtCardNum(this)">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Validade</label>
+          <input class="form-input" id="cc-exp" placeholder="MM/AA" maxlength="5" oninput="fmtCardExp(this)">
+        </div>
+        <div class="form-group">
+          <label class="form-label">CVV</label>
+          <input class="form-input" id="cc-cvv" placeholder="123" maxlength="4" type="password">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Nome no cartão</label>
+        <input class="form-input" id="cc-name" placeholder="JOAO SILVA" style="text-transform:uppercase">
+      </div>
+      <div class="payment-fake">🔒 Demo — usa 4242 4242 4242 4242 · 12/29 · 123</div>
+    </div>
+    <div id="checkout-errors" style="display:none;background:rgba(251,113,133,0.08);border:1px solid var(--rose);border-radius:var(--radius);padding:1rem;margin-bottom:1rem;font-size:13px;color:var(--rose)"></div>
+    <div id="checkout-summary" style="margin-bottom:1rem"></div>
+    <button class="btn-buy fw" onclick="processCheckout()">✓ Confirmar e Obter Downloads</button>
+  </div>
+</div>
+
+<!-- SUCCESS VIEW -->
+<div class="view" id="view-success">
+  <div class="success-container">
+    <div class="success-icon">🎉</div>
+    <h2 class="success-title">Compra concluída!</h2>
+    <p style="color:var(--text2);margin-bottom:1rem">Os teus ficheiros estão prontos para download.</p>
+    <div class="success-files" id="download-files"></div>
+    <p style="font-size:12px;color:var(--text3);margin:1rem 0">Um email de confirmação foi enviado para o vendedor.</p>
+    <button class="btn btn-ghost fw" onclick="showView('catalog')">Continuar a comprar</button>
+  </div>
+</div>
+
+<!-- LOGIN VIEW -->
+<div class="view" id="view-login">
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-logo">⬡ <b style="font-family:'Syne',sans-serif">DigitalMarket</b></div>
+      <div id="auth-form-login">
+        <h2 class="auth-title">Bem-vindo de volta</h2>
+        <p class="auth-sub" style="margin-bottom:.75rem">Entra na tua conta @piaget.pt</p>
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:.6rem .9rem;margin-bottom:1rem;font-size:11px;color:var(--text3)">
+          💡 Demo: admin@piaget.pt / Admin123 · ana@piaget.pt / Ana12345 · buyer@piaget.pt / Buyer123
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-input" id="login-email" placeholder="email@piaget.pt" type="email">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input class="form-input" id="login-pass" placeholder="••••••••" type="password">
+        </div>
+        <div id="login-error" style="display:none;color:var(--rose);font-size:13px;margin-bottom:.75rem;padding:8px 12px;background:rgba(251,113,133,0.08);border-radius:var(--radius)"></div>
+        <button class="btn btn-primary fw" style="width:100%;justify-content:center;padding:12px;margin-top:.5rem" onclick="doLogin()">Entrar →</button>
+        <div class="auth-divider">ou</div>
+        <button class="btn btn-ghost fw" style="width:100%;justify-content:center" onclick="showAuthForm('register')">Criar conta grátis</button>
+      </div>
+      <div id="auth-form-register" style="display:none">
+        <h2 class="auth-title">Criar conta</h2>
+        <p class="auth-sub" style="margin-bottom:1rem">Email institucional @piaget.pt obrigatório</p>
+        <div class="role-selector">
+          <div class="role-btn active" id="role-buyer" onclick="selectRole('buyer')">
+            <div class="role-icon">🛍️</div><div class="role-label">Comprador</div>
+          </div>
+          <div class="role-btn" id="role-seller" onclick="selectRole('seller')">
+            <div class="role-icon">💼</div><div class="role-label">Vendedor</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nome completo</label>
+          <input class="form-input" id="reg-name" placeholder="João Silva">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email institucional</label>
+          <input class="form-input" id="reg-email" placeholder="a12345@piaget.pt">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input class="form-input" id="reg-pass" placeholder="Mín. 8 chars, maiúscula, número" type="password" oninput="updatePwStrength(this.value)">
+          <div style="height:4px;background:var(--border2);border-radius:2px;margin-top:6px;overflow:hidden">
+            <div id="pw-bar" style="height:100%;width:0;border-radius:2px;transition:all .3s"></div>
+          </div>
+          <p id="pw-label" style="font-size:11px;margin-top:3px;color:var(--text3)"></p>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirmar password</label>
+          <input class="form-input" id="reg-pass2" placeholder="Repete a password" type="password">
+        </div>
+        <div id="reg-error" style="display:none;color:var(--rose);font-size:13px;margin-bottom:.75rem;padding:8px 12px;background:rgba(251,113,133,0.08);border-radius:var(--radius)"></div>
+        <button class="btn btn-primary fw" style="width:100%;justify-content:center;padding:12px;margin-top:.5rem" onclick="doRegister()">Criar conta →</button>
+        <div class="auth-divider">ou</div>
+        <button class="btn btn-ghost fw" style="width:100%;justify-content:center" onclick="showAuthForm('login')">Já tenho conta</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD VIEW -->
+<div class="view" id="view-dashboard">
+  <div class="dash-container">
+    <div class="dash-header">
+      <div>
+        <h2 class="dash-title" id="dash-title">Dashboard</h2>
+        <p style="color:var(--text2);font-size:14px" id="dash-welcome">Olá!</p>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-ghost btn-sm" onclick="showView('profile')">👤 Perfil</button>
+        <button class="btn btn-primary btn-sm" onclick="openCreateGigForm()">+ Novo Produto</button>
+      </div>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-card-label">Vendas totais</div><div class="stat-card-value" id="ds-sales">0</div><div class="stat-card-sub">↑ este mês</div></div>
+      <div class="stat-card"><div class="stat-card-label">Receita (€)</div><div class="stat-card-value" id="ds-revenue">0€</div><div class="stat-card-sub">↑ vs anterior</div></div>
+      <div class="stat-card"><div class="stat-card-label">Produtos ativos</div><div class="stat-card-value" id="ds-products">0</div></div>
+      <div class="stat-card"><div class="stat-card-label">Compradores únicos</div><div class="stat-card-value" id="ds-contacts">0</div></div>
+    </div>
+    <p style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:1rem">📦 Os Meus Produtos <span id="ds-prod-count" style="font-size:12px;color:var(--text3);font-weight:400"></span></p>
+    <div class="gigs-list" id="my-gigs-list"></div>
+
+    <p style="font-family:'Syne',sans-serif;font-weight:700;margin:2rem 0 1rem">📈 Histórico de Vendas</p>
+    <div id="sales-history"></div>
+
+    <div id="admin-users-section" style="display:none;margin-top:2rem">
+      <p style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:1rem">👥 Todos os Utilizadores (Admin)</p>
+      <div id="admin-users-table"></div>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE VIEW -->
+<div class="view" id="view-profile">
+  <div class="profile-container">
+    <div class="detail-back" onclick="goBack()">← Voltar</div>
+    <div class="profile-header" id="profile-header-content"></div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;margin-bottom:1.5rem">
+      <p style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:1rem">Editar Perfil</p>
+      <div class="form-group">
+        <label class="form-label">Bio / Sobre mim</label>
+        <textarea class="textarea-input" id="profile-bio" placeholder="Estudante de Engenharia de Software no Piaget..."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Portfolio / GitHub</label>
+        <input class="form-input" id="profile-url" placeholder="https://github.com/seutema">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Especialidade</label>
+        <input class="form-input" id="profile-skill" placeholder="React, Node.js, UI/UX Design...">
+      </div>
+      <button class="btn btn-primary" onclick="saveProfile()">Guardar alterações</button>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem">
+      <p style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:.5rem">⬇️ Meus Downloads</p>
+      <p style="font-size:12px;color:var(--text3);margin-bottom:1rem">Ficheiros guardados na base de dados — disponíveis para sempre, mesmo após reiniciar o browser.</p>
+      <div id="my-downloads-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- CREATE GIG VIEW -->
+<div class="view" id="view-create-gig">
+  <div class="create-container">
+    <div class="detail-back" onclick="showView('dashboard')">← Dashboard</div>
+    <h2 class="create-title">Criar Produto / Gig</h2>
+    <div class="form-group">
+      <label class="form-label">Título</label>
+      <input class="form-input" id="gig-title" placeholder="Ex: Ebook Completo de React.js 2024">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Descrição</label>
+      <textarea class="textarea-input" id="gig-desc" placeholder="Descreve o teu produto com detalhe..."></textarea>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Categoria</label>
+        <select class="form-input" id="gig-cat">
+          <option value="Web Dev">💻 Web Dev</option>
+          <option value="Ebooks">📚 Ebooks</option>
+          <option value="Design">🎨 Design</option>
+          <option value="Vídeo">🎬 Vídeo</option>
+          <option value="Motivação">🚀 Motivação</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tipo</label>
+        <select class="form-input" id="gig-type">
+          <option value="digital">📁 Produto Digital</option>
+          <option value="service">🔧 Serviço Freelance</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Preço (€)</label>
+      <input class="form-input" id="gig-price" type="number" placeholder="9.99" min="0" step="0.01">
+    </div>
+    <input type="hidden" id="gig-edit-id" value="">
+    <div class="upload-zone" id="upload-zone" onclick="document.getElementById('gig-file-input').click()"
+         ondragover="event.preventDefault();this.classList.add('drag-over')"
+         ondragleave="this.classList.remove('drag-over')"
+         ondrop="handleGigFileDrop(event)">
+      <div class="upload-icon" id="upload-icon">📤</div>
+      <p style="font-weight:500;margin-bottom:4px" id="upload-label">Clica ou arrasta o ficheiro aqui</p>
+      <p id="upload-status" style="font-size:12px;color:var(--text3)">PDF, ZIP, MP4, EPUB, DOCX — máx. 100MB</p>
+      <input type="file" id="gig-file-input" style="display:none" accept=".pdf,.zip,.mp4,.epub,.docx,.png,.jpg,.mp3" onchange="handleGigFileSelect(this)">
+    </div>
+    <div id="gig-form-errors" style="display:none;background:rgba(251,113,133,0.08);border:1px solid var(--rose);border-radius:var(--radius);padding:1rem;margin-top:1rem;font-size:13px;color:var(--rose)"></div>
+    <button class="btn btn-primary" id="gig-submit-btn" style="margin-top:1.5rem;width:100%;justify-content:center;padding:14px" onclick="submitGigForm()">Publicar Produto →</button>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+RewriteEngine On
+
+# Garante que o cabeçalho Authorization chega ao PHP
+# (algumas configs de Apache/XAMPP removem-no por defeito)
+<IfModule mod_version.c>
+    <IfVersion >= 2.4.13>
+        CGIPassAuth On
+    </IfVersion>
+</IfModule>
+
+# Redireciona tudo dentro de /api/ para index.php, preservando o path
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^api/(.*)$ api/index.php [QSA,L]
+
+# Permite CORS para desenvolvimento local
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+    Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+    Header set Access-Control-Allow-Headers "Content-Type, Authorization"
+</IfModule>
+
+# Protege a pasta config/ de acesso directo
+<FilesMatch "database\.php$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
