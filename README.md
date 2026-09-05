@@ -7,12 +7,10 @@ DigitalMarket conecta desenvolvedores e criadores de conteúdo a potenciais clie
 ![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
-<!--
-📸 Adiciona aqui 2-3 screenshots ou um GIF curto da aplicação em funcionamento.
-Exemplo:
 ![Homepage](docs/screenshot-home.png)
-![Página de produto](docs/screenshot-produto.png)
--->
+![Catálogo](docs/screenshot-catalogo.png)
+![Login](docs/screenshot-login.png)
+![Checkout](docs/screenshot-checkout.png)
 
 ## Funcionalidades
 
